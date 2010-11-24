@@ -10,6 +10,7 @@ local assert, error, ipairs, pairs, select, type, tonumber, unpack = assert, err
 local format, gsub, strfind, strsub = string.format, string.gsub, string.find, string.sub
 local concat, tinsert = table.concat, table.insert
 local ceil = math.ceil
+local pcall, require = pcall, require
 local parse = lxp.lom.parse
 
 module (...)
@@ -95,7 +96,9 @@ end
 
 ---------------------------------------------------------------------
 local function x2base64 (tab)
-	return tab.tag == "base64" and next_nonspace (tab, 1)
+	local ret, base64 = pcall( require, 'base64')
+	if not ret then error( 'Sorry, please install lua lbase64 first.') end
+	return tab.tag == "base64" and base64.decode(next_nonspace (tab, 1))
 end
 
 ---------------------------------------------------------------------
@@ -275,9 +278,10 @@ end
 ---------------------------------------------------------------------
 local formats = {
 	boolean = "<boolean>%d</boolean>",
-	number = "<double>%d</double>",
 	string = "<string>%s</string>",
 
+	base64 = "<base64>%s</base64>",
+	date = "<dateTime.iso8601>%s</dateTime.iso8601>",
 	array = "<array><data>\n%s\n</data></array>",
 	double = "<double>%s</double>",
 	int = "<int>%s</int>",
@@ -324,6 +328,14 @@ toxml.string = function (v,t)
 	v = v:gsub(' ','&nbsp;')
 	return format (formats.string, v) 
 end
+
+toxml.base64 = function (v,t) 
+	local ret, base64 = pcall( require, 'base64')
+	if not ret then error( 'Sorry, please install lua lbase64 first.') end
+	return format (formats.base64, base64.encode( v) ) 
+end
+
+toxml.date = function (v,t) return format (formats.date, v) end
 
 ---------------------------------------------------------------------
 -- Build a XML-RPC representation of a boolean.
