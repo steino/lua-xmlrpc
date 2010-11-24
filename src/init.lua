@@ -317,7 +317,13 @@ formats.table = formats.struct
 local toxml = {}
 toxml.double = function (v,t) return format (formats.double, v) end
 toxml.int = function (v,t) return format (formats.int, v) end
-toxml.string = function (v,t) return format (formats.string, v) end
+
+toxml.string = function (v,t) 
+	v = v:gsub('&','&amp;')
+	v = v:gsub('<','&lt;')
+	v = v:gsub(' ','&nbsp;')
+	return format (formats.string, v) 
+end
 
 ---------------------------------------------------------------------
 -- Build a XML-RPC representation of a boolean.
@@ -402,7 +408,15 @@ function toxml.struct (val, typ)
 	return format (formats.struct, concat (ret))
 end
 
-toxml.table = toxml.struct
+function toxml.table(val, typ)
+	local i = 0
+	for k, _ in pairs(val) do
+		if type(k) == 'number' then i=i+1 
+		else return toxml.struct(val, typ) end
+	end
+	if i ~= #val then return toxml.struct(val, typ) end
+	return toxml.array(val, typ)
+end
 
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
