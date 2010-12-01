@@ -3,7 +3,7 @@
 -- See Copyright Notice in license.html
 ---------------------------------------------------------------------
 
-local error, tonumber, tostring, unpack = error, tonumber, tostring, unpack
+local error, tonumber, tostring, unpack, type = error, tonumber, tostring, unpack, type
 
 local ltn12   = require"ltn12"
 local request = require"socket.http".request
@@ -44,7 +44,10 @@ function call (url_or_table, method, ...)
 	local err, code, headers, status = request(reqt)
 	local body = table.concat (tbody)
 	if tonumber (code) == 200 then
-		return xmlrpc.clDecode (body), headers
+	   -- "return xmlrpc.clDecode(body), headers" can not work
+	   -- and I don't want to change any existing code.
+	   local ret, result = xmlrpc.clDecode(body)
+	   return  ret, result, headers
 	else
 		error (tostring (err or code).."\n\n"..tostring(body))
 	end
