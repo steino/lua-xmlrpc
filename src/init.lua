@@ -419,16 +419,7 @@ function toxml.struct (val, typ)
 	end
 	return format (formats.struct, concat (ret))
 end
-
-function toxml.table(val, typ)
-	local i = 0
-	for k, _ in pairs(val) do
-		if type(k) == 'number' then i=i+1 
-		else return toxml.struct(val, typ) end
-	end
-	if i ~= #val then return toxml.struct(val, typ) end
-	return toxml.array(val, typ)
-end
+toxml.table = toxml.struct
 
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
