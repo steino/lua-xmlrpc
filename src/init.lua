@@ -323,9 +323,7 @@ toxml.double = function (v,t) return format (formats.double, v) end
 toxml.int = function (v,t) return format (formats.int, v) end
 
 toxml.string = function (v,t) 
-	v = v:gsub('&','&amp;')
-	v = v:gsub('<','&lt;')
-	v = v:gsub(' ','&nbsp;')
+	v = v:gsub('&','&amp;'):gsub('<','&lt;')
 	return format (formats.string, v) 
 end
 
