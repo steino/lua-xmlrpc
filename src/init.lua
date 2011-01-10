@@ -46,9 +46,7 @@ end
 ---------------------------------------------------------------------
 function iso2date(s)
   local _,_,y,m,d,h,mn,s = strfind(s, "(%d%d%d%d)-(%d%d)-(%d%d)T(%d%d):(%d%d):(%d%d)")
-  local t = {year = y, month = m, day = d, hour = h, min = mn, sec = s}
-  local mtime = time(t)
-  return mtime
+  return time({year = y, month = m, day = d, hour = h, min = mn, sec = s})
 end
 
 ---------------------------------------------------------------------
@@ -105,7 +103,7 @@ end
 
 ---------------------------------------------------------------------
 local function x2date (tab)
-  return tab.tag == "dateTime.iso8601" and iso2date(next_nonspace (tab, 1))
+  return tab.tag == "dateTime.iso8601" and {dateTimeUnix = iso2date(next_nonspace (tab, 1))}
 end
 
 ---------------------------------------------------------------------
