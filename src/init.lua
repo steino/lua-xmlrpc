@@ -11,6 +11,7 @@ local format, gsub, strfind, strsub = string.format, string.gsub, string.find, s
 local concat, tinsert = table.concat, table.insert
 local ceil = math.ceil
 local pcall, require = pcall, require
+local date, time = os.date, os.time
 local parse = lxp.lom.parse
 
 module (...)
@@ -35,6 +36,19 @@ end
 ---------------------------------------------------------------------
 local function is_space (s)
 	return type(s) == "string" and trim(s) == ""
+end
+
+---------------------------------------------------------------------
+local function date2iso(mtime)
+  return date("%Y-%m-%dT%H:%M:%S%z", mtime)
+end
+
+---------------------------------------------------------------------
+function iso2date(s)
+  local _,_,y,m,d,h,mn,s = strfind(s, "(%d%d%d%d)-(%d%d)-(%d%d)T(%d%d):(%d%d):(%d%d)")
+  local t = {year = y, month = m, day = d, hour = h, min = mn, sec = s}
+  local mtime = time(t)
+  return mtime
 end
 
 ---------------------------------------------------------------------
@@ -91,7 +105,7 @@ end
 
 ---------------------------------------------------------------------
 local function x2date (tab)
-	return tab.tag == "dateTime.iso8601" and next_nonspace (tab, 1)
+  return tab.tag == "dateTime.iso8601" and iso2date(next_nonspace (tab, 1))
 end
 
 ---------------------------------------------------------------------
@@ -333,7 +347,7 @@ toxml.base64 = function (v,t)
 	return format (formats.base64, base64.encode( v) ) 
 end
 
-toxml.date = function (v,t) return format (formats.date, v) end
+toxml.date = function (v,t) return format (formats.date, date2iso(v)) end
 
 ---------------------------------------------------------------------
 -- Build a XML-RPC representation of a boolean.
