@@ -429,8 +429,8 @@ end
 ---------------------------------------------------------------------
 function toxml.value (obj)
 	local to, val = type_val (obj)
-	if type(to) == "table" then
-		return format (formats.value, toxml[to.type] (val, to))
+	if to == "table" then
+		return format (formats.value, toxml[obj.type] (val, to))
 	else
 		-- primitive (not structured) types.
 		--return format (formats[to], val)
